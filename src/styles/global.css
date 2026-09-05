@@ -282,16 +282,6 @@ p, li, dd { max-width: 68ch; }
   height: auto;
 }
 
-.diagram-caption {
-  padding: 14px 20px;
-  background: var(--krem-muda);
-  border-top: var(--garis);
-  font-size: 0.95rem;
-  font-weight: 700;
-  line-height: 1.45;
-  color: var(--daun);
-}
-
 /* Modal Pengumuman Pop-up */
 .announcement-modal {
   position: fixed;
