@@ -1,7 +1,7 @@
 import { mkdir, writeFile } from "node:fs/promises";
 
 const spreadsheetId = "1nItdfvg9ZL-lE4r5a-7_V6GKf8_mYeUCd_PjMOKYLa8";
-const sheetNames = ["materi", "latihan", "pengumuman", "tim", "kredit", "pembahasan"];
+const sheetNames = ["materi", "latihan", "pengumuman", "tim", "kredit", "soal"];
 const source = `https://docs.google.com/spreadsheets/d/${spreadsheetId}/edit?usp=sharing`;
 
 function csvUrl(sheet) {
@@ -17,7 +17,7 @@ const kolomPenanda = {
   pengumuman: "tanggal",
   tim: "nim",
   kredit: "jenis",
-  pembahasan: "paket",
+  soal: "kunci",
 };
 
 async function getSheet(sheet) {

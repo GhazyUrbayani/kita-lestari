@@ -1,55 +1,59 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
-import { asParagraphs, isHttpUrl, latihan, pembahasanPaket } from "../../lib/content";
-
-function embedUrl(formUrl: string) {
-  const url = new URL(formUrl);
-  url.searchParams.set("embedded", "true");
-  return url.toString();
-}
+import { idPaket, latihan, opsiSoal, soalPaket } from "../../lib/content";
 ---
 
-<BaseLayout title="Latihan soal" live={{ page: "practice", sources: ["latihan", "pembahasan"] }}>
+<BaseLayout title="Latihan soal" live={{ page: "practice", sources: ["latihan", "soal"] }}>
   <section class="page-intro">
     <h1>Latihan soal</h1>
-    <p>Pilih paket yang ingin dikerjakan.</p>
+    <p>Pilih paket yang ingin dikerjakan. Nilai dan pembahasan muncul begitu tombol Selesai ditekan.</p>
   </section>
   <div data-live="practice">{latihan.length ? (
     <ul class="card-list">
       {latihan.map((item) => {
-        const formTersedia = isHttpUrl(item.form_url);
-        const id = `keterangan-${item.urutan ?? item.judul_paket}`;
-        const kunci = pembahasanPaket(item.judul_paket);
+        const butir = soalPaket(item.judul_paket);
+        const id = idPaket(item.judul_paket);
         return (
           <li>
             <article class="content-card">
               <h2>{item.judul_paket}</h2>
-              {item.keterangan && <p id={id}>{item.keterangan}</p>}
-              {formTersedia ? (
-                <details class="form-embed">
-                  <summary class="action-link" aria-describedby={item.keterangan ? id : undefined}>Tampilkan soal {item.judul_paket} di halaman ini</summary>
-                  <div class="form-embed-panel">
-                    <iframe src={embedUrl(item.form_url)} title={`Soal ${item.judul_paket}`} loading="lazy" referrerpolicy="strict-origin-when-cross-origin">
-                      Form tidak dapat dimuat di halaman ini.
-                    </iframe>
+              {item.keterangan && <p>{item.keterangan}</p>}
+              {butir.length ? (
+                <details class="quiz-embed">
+                  <summary class="action-link">Tampilkan soal {item.judul_paket} di halaman ini</summary>
+                  <div class="quiz-panel">
+                    <form class="quiz" data-paket={item.judul_paket}>
+                      <p class="quiz-langkah" role="status"></p>
+                      <ol class="quiz-list">
+                        {butir.map((soal, urutan) => (
+                          <li class="quiz-item" data-kunci={soal.kunci?.trim().toUpperCase()}>
+                            <fieldset>
+                              <legend>{soal.nomor ?? urutan + 1}. {soal.pertanyaan}</legend>
+                              {opsiSoal(soal).map((opsi) => (
+                                <label class="quiz-option">
+                                  <input type="radio" name={`${id}-${urutan + 1}`} value={opsi.huruf} />
+                                  <span>{opsi.huruf}. {opsi.teks}</span>
+                                </label>
+                              ))}
+                            </fieldset>
+                            <p class="quiz-note" hidden></p>
+                            {soal.pembahasan && <p class="quiz-pembahasan" hidden>{soal.pembahasan}</p>}
+                          </li>
+                        ))}
+                      </ol>
+                      <p class="quiz-sisa" role="status"></p>
+                      <div class="quiz-actions" hidden>
+                        <button type="button" class="action-link quiz-prev">Sebelumnya</button>
+                        <button type="button" class="action-link quiz-next">Berikutnya</button>
+                        <button type="submit" class="action-link quiz-selesai">Selesai dan lihat hasil</button>
+                        <button type="button" class="action-link quiz-reset" hidden>Kerjakan ulang</button>
+                      </div>
+                      <section class="quiz-result" aria-live="polite" hidden></section>
+                    </form>
                   </div>
                 </details>
               ) : (
-                <p>Paket ini belum tersedia. Pengelola perlu mengisi link soal di Sheet.</p>
-              )}
-              {formTersedia && <p class="connection-note">Mengisi soal membutuhkan koneksi internet.</p>}
-              {formTersedia && kunci.length > 0 && (
-                <section class="answer-key" aria-live="polite" hidden>
-                  <h3>Kunci jawaban dan pembahasan</h3>
-                  <ol class="answer-list">
-                    {kunci.map((baris) => (
-                      <li>
-                        {baris.jawaban && <p class="answer-value"><strong>Jawaban:</strong> {baris.jawaban}</p>}
-                        {asParagraphs(baris.pembahasan).map((paragraf) => <p>{paragraf}</p>)}
-                      </li>
-                    ))}
-                  </ol>
-                </section>
+                <p>Paket ini belum tersedia. Pengelola perlu mengisi soalnya di tab <code>soal</code>.</p>
               )}
             </article>
           </li>
@@ -59,5 +63,5 @@ function embedUrl(formUrl: string) {
   ) : (
     <p>Belum ada paket soal yang diterbitkan.</p>
   )}</div>
-  <script src="/scripts/quiz-reveal.js" defer></script>
+  <script src="/scripts/quiz.js" defer></script>
 </BaseLayout>

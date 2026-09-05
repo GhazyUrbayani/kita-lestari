@@ -9,7 +9,6 @@
   const driveFileId = (value) => { const parsed = new URL(value); return /(^|\.)drive\.google\.com$/.test(parsed.hostname) ? (parsed.pathname.match(/\/d\/([a-zA-Z0-9_-]+)/)?.[1] || parsed.searchParams.get("id") || "") : ""; };
   const imageSourceUrl = (value) => { const id = driveFileId(value); return id ? `https://drive.google.com/thumbnail?id=${encodeURIComponent(id)}&sz=w1600` : value; };
   const pdfPreviewUrl = (value) => { const id = driveFileId(value); return id ? `https://drive.google.com/file/d/${encodeURIComponent(id)}/preview` : value; };
-  const formEmbedUrl = (value) => { const parsed = new URL(value); parsed.searchParams.set("embedded", "true"); return parsed.href; };
   const paragraphHtml = (value) => text(value).split(/\r?\n\s*\r?\n/).filter(Boolean).map((paragraph) => `<p>${escape(paragraph)}</p>`).join("");
   const header = (value) => text(value).toLocaleLowerCase("id-ID").replace(/\s+/g, "_");
 
@@ -37,7 +36,10 @@
   /* Isi versi live datang beberapa detik setelah halaman tampil. Bila saat itu
      pembaca sudah membuka form atau kunci jawaban sudah terbuka, penggantian
      dilewati supaya jawaban yang sedang diketik tidak ikut terhapus. */
-  const sedangDipakai = (node) => Boolean(node.querySelector("details[open]") || node.querySelector(".answer-key:not([hidden])"));
+  /* Panel kuis yang sekadar terbuka boleh diganti isinya, sebab keadaannya
+     dipulihkan kembali oleh quiz.js. Yang dilindungi hanya pekerjaan pembaca:
+     jawaban yang sudah dipilih, hasil yang sudah tampil, dan PDF materi. */
+  const sedangDipakai = (node) => Boolean(node.querySelector("details.document-embed[open]") || node.querySelector("input:checked") || node.querySelector(".quiz-result:not([hidden])"));
   const assign = (selector, html) => {
     const node = document.querySelector(selector);
     if (!node || node.innerHTML === html || sedangDipakai(node)) return;
@@ -49,22 +51,36 @@
     if (!shown.length) return "<p>Belum ada materi yang diterbitkan. Pengelola dapat menambahkannya di Sheet.</p>";
     return `<ul class="card-list">${shown.map((item) => `<li><article class="content-card"><h2><a href="/materi/${encodeURIComponent(item.slug)}">${escape(item.judul)}</a></h2>${item.ringkasan ? `<p>${escape(item.ringkasan)}</p>` : ""}</article></li>`).join("")}</ul>`;
   }
-  function answerKeyHtml(rows, paket) {
+  const idPaket = (paket) => text(paket).toLocaleLowerCase("id-ID").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "paket";
+
+  function quizHtml(rows, paket) {
     const key = text(paket).toLocaleLowerCase("id-ID");
-    const notes = rows
-      .filter((row) => (text(row.status) === "" || text(row.status).toLocaleLowerCase("id-ID") === "terbit") && text(row.paket).toLocaleLowerCase("id-ID") === key)
+    const butir = rows
+      .filter((row) => text(row.paket).toLocaleLowerCase("id-ID") === key && text(row.pertanyaan) && text(row.kunci))
       .sort((a, b) => (Number(text(a.nomor)) || Infinity) - (Number(text(b.nomor)) || Infinity));
-    if (!notes.length) return "";
-    const items = notes.map((row) => `<li>${row.jawaban ? `<p class="answer-value"><strong>Jawaban:</strong> ${escape(row.jawaban)}</p>` : ""}${paragraphHtml(row.pembahasan)}</li>`).join("");
-    return `<section class="answer-key" aria-live="polite" hidden><h3>Kunci jawaban dan pembahasan</h3><ol class="answer-list">${items}</ol></section>`;
+    if (!butir.length) return "<p>Paket ini belum tersedia. Pengelola perlu mengisi soalnya di tab <code>soal</code>.</p>";
+    const id = idPaket(paket);
+    const daftar = butir.map((row, urutan) => {
+      const opsi = [["A", row.opsi_a], ["B", row.opsi_b], ["C", row.opsi_c], ["D", row.opsi_d]]
+        .filter(([, teks]) => text(teks))
+        .map(([huruf, teks]) => `<label class="quiz-option"><input type="radio" name="${id}-${urutan + 1}" value="${huruf}"><span>${huruf}. ${escape(teks)}</span></label>`)
+        .join("");
+      return `<li class="quiz-item" data-kunci="${escape(text(row.kunci).toUpperCase())}"><fieldset><legend>${escape(text(row.nomor) || String(urutan + 1))}. ${escape(row.pertanyaan)}</legend>${opsi}</fieldset><p class="quiz-note" hidden></p>${text(row.pembahasan) ? `<p class="quiz-pembahasan" hidden>${escape(row.pembahasan)}</p>` : ""}</li>`;
+    }).join("");
+    return `<details class="quiz-embed"><summary class="action-link">Tampilkan soal ${escape(paket)} di halaman ini</summary><div class="quiz-panel"><form class="quiz" data-paket="${escape(paket)}"><p class="quiz-langkah" role="status"></p><ol class="quiz-list">${daftar}</ol><p class="quiz-sisa" role="status"></p><div class="quiz-actions" hidden><button type="button" class="action-link quiz-prev">Sebelumnya</button><button type="button" class="action-link quiz-next">Berikutnya</button><button type="submit" class="action-link quiz-selesai">Selesai dan lihat hasil</button><button type="button" class="action-link quiz-reset" hidden>Kerjakan ulang</button></div><section class="quiz-result" aria-live="polite" hidden></section></form></div></details>`;
   }
+
   function render(data) {
-    const material = parseCsv(data.materi || ""), practice = parseCsv(data.latihan || ""), announcement = parseCsv(data.pengumuman || ""), team = parseCsv(data.tim || ""), credits = parseCsv(data.kredit || ""), discussion = parseCsv(data.pembahasan || "");
-    if (config.page === "home") {
-      const latest = published(announcement, "judul")[0];
-      assign('[data-live="announcement"]', latest ? `<article class="notice-board">${latest.tanggal ? `<p class="notice-date"><time>${escape(latest.tanggal)}</time></p>` : ""}<h3>${escape(latest.judul)}</h3>${paragraphHtml(latest.isi)}</article>` : "<p>Belum ada pengumuman yang diterbitkan.</p>");
-      assign('[data-live="materials-preview"]', materialList(material, 2));
+    const material = parseCsv(data.materi || ""), practice = parseCsv(data.latihan || ""), announcement = parseCsv(data.pengumuman || ""), team = parseCsv(data.tim || ""), credits = parseCsv(data.kredit || ""), questions = parseCsv(data.soal || "");
+    /* Bila tab `pengumuman` kosong, isi bawaan modal dibiarkan apa adanya
+       supaya setiap halaman menampilkan pengumuman yang sama. */
+    const latest = published(announcement, "judul")[0];
+    if (latest) {
+      const tanda = escape(`${text(latest.tanggal)}|${text(latest.judul)}`);
+      assign('[data-live="announcement"]', `<article class="notice-board" data-pengumuman-id="${tanda}">${latest.tanggal ? `<p class="notice-date"><time>${escape(latest.tanggal)}</time></p>` : ""}<h3>${escape(latest.judul)}</h3>${paragraphHtml(latest.isi)}</article>`);
     }
+
+    if (config.page === "home") assign('[data-live="materials-preview"]', materialList(material, 2));
     if (config.page === "materials") assign('[data-live="materials-list"]', materialList(material));
     if (config.page === "material") {
       const item = ordered(published(material, "judul")).find((entry) => entry.slug === config.slug);
@@ -74,10 +90,9 @@
     }
     if (config.page === "practice") {
       const packages = ordered(published(practice, "judul_paket"));
-      assign('[data-live="practice"]', packages.length ? `<ul class="card-list">${packages.map((item) => {
-        const form = url(item.form_url);
-        return `<li><article class="content-card"><h2>${escape(item.judul_paket)}</h2>${item.keterangan ? `<p>${escape(item.keterangan)}</p>` : ""}${form ? `<details class="form-embed"><summary class="action-link">Tampilkan soal ${escape(item.judul_paket)} di halaman ini</summary><div class="form-embed-panel"><iframe src="${escape(formEmbedUrl(form))}" title="Soal ${escape(item.judul_paket)}" loading="lazy" referrerpolicy="strict-origin-when-cross-origin">Form tidak dapat dimuat di halaman ini.</iframe></div></details><p class="connection-note">Mengisi soal membutuhkan koneksi internet.</p>${answerKeyHtml(discussion, item.judul_paket)}` : "<p>Paket ini belum tersedia. Pengelola perlu mengisi link soal di Sheet.</p>"}</article></li>`;
-      }).join("")}</ul>` : "<p>Belum ada paket soal yang diterbitkan.</p>");
+      assign('[data-live="practice"]', packages.length
+        ? `<ul class="card-list">${packages.map((item) => `<li><article class="content-card"><h2>${escape(item.judul_paket)}</h2>${item.keterangan ? `<p>${escape(item.keterangan)}</p>` : ""}${quizHtml(questions, item.judul_paket)}</article></li>`).join("")}</ul>`
+        : "<p>Belum ada paket soal yang diterbitkan.</p>");
     }
     if (config.page === "about") {
       const members = ordered(team.filter((item) => text(item.nama)));
@@ -88,7 +103,10 @@
   }
   function readStored() { try { return JSON.parse(localStorage.getItem(storageKey) || "null"); } catch { return null; } }
   async function refresh() {
-    const entries = await Promise.all((config.sources || []).map(async (sheet) => {
+    /* Modal pengumuman tampil di semua halaman, jadi sheet ini selalu ikut
+       diambil walau bukan bagian dari sumber halaman yang bersangkutan. */
+    const sumber = [...new Set([...(config.sources || []), "pengumuman"])];
+    const entries = await Promise.all(sumber.map(async (sheet) => {
       const response = await fetch(config.urls[sheet], { cache: "no-store" });
       if (!response.ok) throw new Error("CSV tidak tersedia");
       return [sheet, await response.text()];

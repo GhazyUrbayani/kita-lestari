@@ -1,6 +1,7 @@
 ---
 import BottomNav from "../components/BottomNav.astro";
 import SiteFooter from "../components/SiteFooter.astro";
+import AnnouncementModal from "../components/AnnouncementModal.astro";
 import "../styles/global.css";
 import { sheetUrls, snapshot } from "../lib/content";
 
@@ -30,6 +31,22 @@ const adminEnabled = import.meta.env.ADMIN_ENABLED === "true";
     <header class="site-header">
       <div class="masthead">
         <a class="wordmark" href="/" aria-label="KITA LESTARI, kembali ke Beranda">KITA LESTARI</a>
+        <button
+          type="button"
+          class="bell-btn"
+          id="btn-lonceng-pengumuman"
+          aria-label="Lihat pengumuman"
+          aria-haspopup="dialog"
+          aria-controls="modal-pengumuman"
+          aria-expanded="false"
+          title="Lihat pengumuman"
+        >
+          <svg class="bell-icon" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+            <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+          </svg>
+          <span class="bell-dot" aria-hidden="true"></span>
+        </button>
       </div>
     </header>
     <main id="isi-utama" class="page-shell">
@@ -37,6 +54,7 @@ const adminEnabled = import.meta.env.ADMIN_ENABLED === "true";
     </main>
     <SiteFooter includeAdminLink={adminEnabled} />
     <BottomNav />
+    <AnnouncementModal />
     {live && <script is:inline define:vars={{ live: { ...live, urls: sheetUrls, buildId: snapshot.builtAt } }}>window.__KITA_LIVE__ = live;</script>}
     {live && <script src="/scripts/live-content.js" defer></script>}
   </body>

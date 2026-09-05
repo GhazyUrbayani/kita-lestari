@@ -5,7 +5,7 @@ export type Latihan = { urutan?: string; judul_paket?: string; keterangan?: stri
 export type Pengumuman = { tanggal?: string; judul?: string; isi?: string; status?: string };
 export type AnggotaTim = { urutan?: string; nama?: string; nim?: string; peran?: string; prodi?: string; angkatan?: string };
 export type Kredit = { jenis?: string; nama?: string; keterangan?: string; status?: string };
-export type Pembahasan = { paket?: string; nomor?: string; jawaban?: string; pembahasan?: string; status?: string };
+export type Soal = { paket?: string; nomor?: string; pertanyaan?: string; opsi_a?: string; opsi_b?: string; opsi_c?: string; opsi_d?: string; kunci?: string; pembahasan?: string };
 
 type SourceSheet = { url: string; csv: string };
 type Snapshot = { version: number; source: string; builtAt: string | null; sheets: Record<string, SourceSheet> };
@@ -59,20 +59,26 @@ export const latihan = ordered(rows<Latihan>("latihan").filter((item) => isTerbi
 export const pengumuman = rows<Pengumuman>("pengumuman").filter((item) => isTerbit(item) && Boolean(stringValue(item.judul)));
 export const tim = ordered(rows<AnggotaTim>("tim").filter((item) => Boolean(stringValue(item.nama))));
 export const kredit = rows<Kredit>("kredit").filter((item) => isTerbit(item) && Boolean(stringValue(item.nama)));
-/* Berbeda dari sheet lain, kolom `status` di sini boleh dikosongkan: baris pembahasan
-   ditampilkan kecuali statusnya sengaja diisi selain "terbit", misalnya "draf". */
-function pembahasanTampil(item: { status?: string }) {
-  const status = stringValue(item.status);
-  return status === "" || status.toLocaleLowerCase("id-ID") === "terbit";
-}
-export const pembahasan = rows<Pembahasan>("pembahasan").filter((item) => pembahasanTampil(item) && Boolean(stringValue(item.paket)));
+export const soal = rows<Soal>("soal").filter((item) => Boolean(stringValue(item.paket)) && Boolean(stringValue(item.pertanyaan)) && Boolean(stringValue(item.kunci)));
 
-/** Kunci jawaban satu paket latihan, diurutkan menurut kolom `nomor`. */
-export function pembahasanPaket(paket?: string) {
+/** Soal satu paket latihan, diurutkan menurut kolom `nomor`. */
+export function soalPaket(paket?: string) {
   const kunci = stringValue(paket).toLocaleLowerCase("id-ID");
-  return pembahasan
+  return soal
     .filter((item) => stringValue(item.paket).toLocaleLowerCase("id-ID") === kunci)
     .sort((first, second) => (Number(stringValue(first.nomor)) || Infinity) - (Number(stringValue(second.nomor)) || Infinity));
+}
+
+/** Empat pilihan jawaban satu soal, lengkap dengan hurufnya. */
+export function opsiSoal(item: Soal) {
+  return ([["A", item.opsi_a], ["B", item.opsi_b], ["C", item.opsi_c], ["D", item.opsi_d]] as const)
+    .filter(([, teks]) => Boolean(stringValue(teks)))
+    .map(([huruf, teks]) => ({ huruf, teks: stringValue(teks) }));
+}
+
+/** Nama grup radio yang aman dipakai sebagai atribut HTML. */
+export function idPaket(paket?: string) {
+  return stringValue(paket).toLocaleLowerCase("id-ID").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "paket";
 }
 
 export function asParagraphs(value?: string) { return stringValue(value).split(/\r?\n\s*\r?\n/).map((paragraph) => paragraph.trim()).filter(Boolean); }

@@ -1,0 +1,169 @@
+---
+import { pengumuman, asParagraphs } from "../lib/content";
+
+const latestAnnouncement = pengumuman[0];
+const announcementData = latestAnnouncement ?? {
+  tanggal: "5 September 2026",
+  judul: "Selamat Datang di Portal KITA LESTARI",
+  isi: "Arsip materi lokakarya edukatif Desa Sukalaksana telah tersedia.\n\nPelajari modul pembuatan dan pemeliharaan lubang resapan biopori, pemanfaatan sampah organik, serta uji pemahaman Anda melalui latihan soal interaktif."
+};
+
+/* Penanda isi pengumuman. Pop-up hanya muncul sendiri selama penandanya belum
+   pernah ditutup, sehingga pengumuman yang sama tidak menyapa berulang kali. */
+const idPengumuman = `${announcementData.tanggal ?? ""}|${announcementData.judul ?? ""}`;
+---
+
+<div
+  id="modal-pengumuman"
+  class="announcement-modal"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="judul-modal-pengumuman"
+  hidden
+>
+  <div class="announcement-backdrop" id="modal-backdrop" tabindex="-1"></div>
+  <div class="announcement-dialog" id="modal-dialog-container">
+    <article class="announcement-card" id="modal-card">
+      <header class="announcement-header">
+        <div class="announcement-header-title">
+          <svg
+            class="announcement-bell-badge"
+            viewBox="0 0 24 24"
+            width="22"
+            height="22"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+          >
+            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+            <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+          </svg>
+          <h2 id="judul-modal-pengumuman">Pengumuman</h2>
+        </div>
+        <button
+          type="button"
+          class="announcement-close-btn"
+          id="btn-tutup-pengumuman"
+          aria-label="Tutup Pengumuman"
+          title="Tutup (Esc)"
+        >
+          <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </header>
+
+      <div class="announcement-body" data-live="announcement">
+        <article class="notice-board" data-pengumuman-id={idPengumuman}>
+          {announcementData.tanggal && (
+            <p class="notice-date"><time>{announcementData.tanggal}</time></p>
+          )}
+          <h3>{announcementData.judul}</h3>
+          {asParagraphs(announcementData.isi).map((paragraph) => (
+            <p>{paragraph}</p>
+          ))}
+        </article>
+      </div>
+
+      <footer class="announcement-footer">
+        <button type="button" class="btn-dismiss" id="btn-mengerti-pengumuman">
+          Tutup
+        </button>
+      </footer>
+    </article>
+  </div>
+</div>
+
+<script is:inline>
+  (function () {
+    const modal = document.getElementById("modal-pengumuman");
+    const bellBtn = document.getElementById("btn-lonceng-pengumuman");
+    const closeBtn = document.getElementById("btn-tutup-pengumuman");
+    const dismissBtn = document.getElementById("btn-mengerti-pengumuman");
+    const backdrop = document.getElementById("modal-backdrop");
+    const dialog = document.getElementById("modal-dialog-container");
+
+    if (!modal) return;
+
+    const KUNCI_TUTUP = "kita-lestari:pengumuman:v1";
+    const bacaTanda = () => { try { return localStorage.getItem(KUNCI_TUTUP) || ""; } catch { return ""; } };
+    const tulisTanda = (tanda) => { try { localStorage.setItem(KUNCI_TUTUP, tanda); } catch { /* mode privat menolak menyimpan */ } };
+    const tandaSekarang = () => {
+      const isi = modal.querySelector("[data-pengumuman-id]");
+      return isi ? isi.getAttribute("data-pengumuman-id") || "" : "";
+    };
+
+    function openModal() {
+      modal.removeAttribute("hidden");
+      // Force repaint
+      void modal.offsetWidth;
+      modal.classList.add("is-open");
+      bellBtn?.setAttribute("aria-expanded", "true");
+      document.body.style.overflow = "hidden";
+    }
+
+    function closeModal() {
+      tulisTanda(tandaSekarang());
+      bellBtn?.classList.add("sudah-dibaca");
+      modal.classList.remove("is-open");
+      bellBtn?.setAttribute("aria-expanded", "false");
+      document.body.style.overflow = "";
+      setTimeout(() => {
+        if (!modal.classList.contains("is-open")) {
+          modal.setAttribute("hidden", "");
+        }
+      }, 220);
+    }
+
+    // Toggle via Bell button
+    bellBtn?.addEventListener("click", () => {
+      if (modal.classList.contains("is-open")) {
+        closeModal();
+      } else {
+        openModal();
+      }
+    });
+
+    // Close when clicking close buttons
+    closeBtn?.addEventListener("click", closeModal);
+    dismissBtn?.addEventListener("click", closeModal);
+
+    // Close when clicking outside the Card PopUp (backdrop or dialog container area)
+    backdrop?.addEventListener("click", closeModal);
+    dialog?.addEventListener("click", (e) => {
+      if (e.target === dialog) {
+        closeModal();
+      }
+    });
+
+    // Close with Escape key
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && modal.classList.contains("is-open")) {
+        closeModal();
+      }
+    });
+
+    /* Muncul sendiri hanya bila pengumumannya belum pernah ditutup. Pengumuman
+       baru dari Spreadsheet punya penanda berbeda, jadi tetap menyapa sekali. */
+    function mungkinBuka() {
+      const tanda = tandaSekarang();
+      if (!tanda) return;
+      if (tanda === bacaTanda()) { bellBtn?.classList.add("sudah-dibaca"); return; }
+      if (!modal.classList.contains("is-open")) openModal();
+    }
+
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", () => setTimeout(mungkinBuka, 180));
+    } else {
+      setTimeout(mungkinBuka, 180);
+    }
+
+    /* Isi versi live datang belakangan; penandanya diperiksa ulang saat itu. */
+    const badan = modal.querySelector('[data-live="announcement"]');
+    if (badan && window.MutationObserver) new MutationObserver(mungkinBuka).observe(badan, { childList: true, subtree: true });
+  })();
+</script>
