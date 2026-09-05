@@ -1,0 +1,43 @@
+---
+import BottomNav from "../components/BottomNav.astro";
+import SiteFooter from "../components/SiteFooter.astro";
+import "../styles/global.css";
+import { sheetUrls, snapshot } from "../lib/content";
+
+type Props = {
+  title: string;
+  live?: {
+    page: "home" | "materials" | "material" | "practice" | "about";
+    sources: string[];
+    slug?: string;
+  };
+};
+
+const { title, live } = Astro.props;
+const adminEnabled = import.meta.env.ADMIN_ENABLED === "true";
+---
+
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Arsip materi dan latihan KITA LESTARI." />
+    <title>{title} | KITA LESTARI</title>
+  </head>
+  <body>
+    <a class="skip-link" href="#isi-utama">Lewati navigasi</a>
+    <header class="site-header">
+      <div class="masthead">
+        <a class="wordmark" href="/" aria-label="KITA LESTARI, kembali ke Beranda">KITA LESTARI</a>
+      </div>
+    </header>
+    <main id="isi-utama" class="page-shell">
+      <slot />
+    </main>
+    <SiteFooter includeAdminLink={adminEnabled} />
+    <BottomNav />
+    {live && <script is:inline define:vars={{ live: { ...live, urls: sheetUrls, buildId: snapshot.builtAt } }}>window.__KITA_LIVE__ = live;</script>}
+    {live && <script src="/scripts/live-content.js" defer></script>}
+  </body>
+</html>

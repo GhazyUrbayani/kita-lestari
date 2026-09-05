@@ -1,0 +1,62 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { materi, pengumuman, asParagraphs } from "../lib/content";
+
+const latestAnnouncement = pengumuman[0];
+const featuredMateri = materi.slice(0, 2);
+---
+
+<BaseLayout title="Beranda" live={{ page: "home", sources: ["materi", "pengumuman"] }}>
+  <section class="page-intro" aria-labelledby="judul-beranda">
+    <h1 id="judul-beranda">KITA LESTARI</h1>
+    <p>Arsip materi lokakarya Desa Sukalaksana.</p>
+  </section>
+
+  <section class="content-section" aria-labelledby="judul-pengumuman">
+    <h2 id="judul-pengumuman">Pengumuman</h2>
+    <div data-live="announcement">{latestAnnouncement ? (
+      <article class="notice-board">
+        {latestAnnouncement.tanggal && <p class="notice-date"><time>{latestAnnouncement.tanggal}</time></p>}
+        <h3>{latestAnnouncement.judul}</h3>
+        {asParagraphs(latestAnnouncement.isi).map((paragraph) => <p>{paragraph}</p>)}
+      </article>
+    ) : (
+      <p>Belum ada pengumuman yang diterbitkan.</p>
+    )}</div>
+  </section>
+
+  <figure class="diagram" aria-labelledby="judul-diagram">
+    <svg viewBox="0 0 640 360" role="img" aria-labelledby="judul-diagram keterangan-diagram">
+      <title id="judul-diagram">Diagram potongan tanah</title>
+      <desc id="keterangan-diagram">Diagram menunjukkan lubang biopori vertikal, tanah, sampah organik, dan arah air meresap.</desc>
+      <rect class="surface" x="0" y="0" width="640" height="95" />
+      <rect class="ground" x="0" y="95" width="640" height="265" />
+      <circle class="biopori" cx="320" cy="150" r="47" />
+      <rect class="biopori" x="273" y="150" width="94" height="170" />
+      <path class="water-flow" d="M210 115v168m0 0-12-18m12 18 12-18" />
+      <text class="label" x="40" y="58">Lapisan tanah</text>
+      <text class="label" x="390" y="155">Sampah organik</text>
+      <text class="label" x="390" y="208">Lubang biopori</text>
+      <text class="label" x="390" y="261">Arah air meresap</text>
+    </svg>
+  </figure>
+
+  <section class="content-section" aria-labelledby="judul-materi-terbaru">
+    <h2 id="judul-materi-terbaru">Materi untuk dipelajari</h2>
+    <div data-live="materials-preview">{featuredMateri.length ? (
+      <ul class="card-list">
+        {featuredMateri.map((item) => (
+          <li>
+            <a href={`/materi/${item.slug}`}>{item.judul}</a>
+            {item.ringkasan && <p>{item.ringkasan}</p>}
+          </li>
+        ))}
+      </ul>
+    ) : (
+      <p>Belum ada materi yang diterbitkan.</p>
+    )}</div>
+    <p><a href="/materi">Lihat semua materi</a></p>
+  </section>
+
+  <p class="action-row"><a class="action-link" href="/latihan">Buka latihan soal</a></p>
+</BaseLayout>

@@ -1,0 +1,48 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { isHttpUrl, latihan } from "../../lib/content";
+
+function embedUrl(formUrl: string) {
+  const url = new URL(formUrl);
+  url.searchParams.set("embedded", "true");
+  return url.toString();
+}
+---
+
+<BaseLayout title="Latihan soal" live={{ page: "practice", sources: ["latihan"] }}>
+  <section class="page-intro">
+    <h1>Latihan soal</h1>
+    <p>Pilih paket yang ingin dikerjakan.</p>
+  </section>
+  <div data-live="practice">{latihan.length ? (
+    <ul class="card-list">
+      {latihan.map((item) => {
+        const formTersedia = isHttpUrl(item.form_url);
+        const id = `keterangan-${item.urutan ?? item.judul_paket}`;
+        return (
+          <li>
+            <article class="content-card">
+              <h2>{item.judul_paket}</h2>
+              {item.keterangan && <p id={id}>{item.keterangan}</p>}
+              {formTersedia ? (
+                <details class="form-embed">
+                  <summary class="action-link" aria-describedby={item.keterangan ? id : undefined}>Tampilkan soal {item.judul_paket} di halaman ini</summary>
+                  <div class="form-embed-panel">
+                    <iframe src={embedUrl(item.form_url)} title={`Soal ${item.judul_paket}`} loading="lazy" referrerpolicy="strict-origin-when-cross-origin">
+                      Form tidak dapat dimuat di halaman ini.
+                    </iframe>
+                  </div>
+                </details>
+              ) : (
+                <p>Paket ini belum tersedia. Pengelola perlu mengisi link soal di Sheet.</p>
+              )}
+              {formTersedia && <p class="connection-note">Mengisi soal membutuhkan koneksi internet.</p>}
+            </article>
+          </li>
+        );
+      })}
+    </ul>
+  ) : (
+    <p>Belum ada paket soal yang diterbitkan.</p>
+  )}</div>
+</BaseLayout>

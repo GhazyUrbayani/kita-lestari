@@ -1,0 +1,82 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+---
+
+<BaseLayout title="Panduan pengelola">
+  <article class="guide">
+    <section class="page-intro">
+      <h1>Panduan pengelola</h1>
+      <p>Halaman ini membantu pengelola memperbarui isi situs lewat Google Drive dan Google Sheet.</p>
+    </section>
+
+    <section aria-labelledby="ganti-pdf">
+      <h2 id="ganti-pdf">Mengganti PDF di Drive</h2>
+      <figure><figcaption>Gambar panduan: menemukan tombol salin link pada Google Drive.</figcaption></figure>
+      <ol>
+        <li>Buka folder materi di Google Drive.</li>
+        <li>Unggah PDF pengganti atau buka PDF yang sudah ada.</li>
+        <li>Atur aksesnya agar orang yang memiliki link dapat melihatnya.</li>
+        <li>Salin link bagikan PDF.</li>
+        <li>Tempel link itu pada kolom <strong>pdf_url</strong> di baris materi yang sesuai. Situs akan menampilkan PDF di halaman materi yang sama saat warga memilih tombolnya.</li>
+      </ol>
+    </section>
+
+    <section aria-labelledby="tambah-gambar">
+      <h2 id="tambah-gambar">Menambahkan gambar materi</h2>
+      <figure><figcaption>Gambar panduan: menyalin link bagikan gambar dari Google Drive.</figcaption></figure>
+      <ol>
+        <li>Unggah gambar JPG, PNG, atau WebP ke Google Drive.</li>
+        <li>Atur aksesnya agar orang yang memiliki link dapat melihatnya.</li>
+        <li>Salin link bagikan gambar dan tempel pada kolom <strong>gambar_url</strong> di tab <strong>materi</strong>.</li>
+        <li>Biarkan kolom kosong jika materi tidak memerlukan gambar. Halaman tetap berjalan tanpa gambar.</li>
+      </ol>
+    </section>
+
+    <section aria-labelledby="ganti-form">
+      <h2 id="ganti-form">Mengganti link Form</h2>
+      <figure><figcaption>Gambar panduan: menyalin link dari tombol kirim di Google Form.</figcaption></figure>
+      <ol>
+        <li>Buka Google Form paket soal.</li>
+        <li>Pilih tombol kirim lalu salin link formulir.</li>
+        <li>Buka Sheet dan pilih tab <strong>latihan</strong>.</li>
+        <li>Tempel link pada kolom <strong>form_url</strong>.</li>
+        <li>Gunakan link yang berakhir dengan <strong>/viewform</strong>. Situs akan menampilkan Form di halaman latihan; tidak perlu menambahkan kode sematan sendiri.</li>
+        <li>Jangan pernah menulis kunci jawaban atau pembahasan pada kolom ini.</li>
+        <li>Isi <strong>terbit</strong> pada kolom status jika paket siap dibuka warga.</li>
+      </ol>
+    </section>
+
+    <section aria-labelledby="tambah-materi">
+      <h2 id="tambah-materi">Menambah materi baru di Sheet</h2>
+      <figure><figcaption>Gambar panduan: menambah satu baris di bawah tabel materi.</figcaption></figure>
+      <ol>
+        <li>Buka tab <strong>materi</strong>.</li>
+        <li>Tambahkan satu baris baru di bawah data terakhir.</li>
+        <li>Isi judul dan slug. Slug adalah nama pendek untuk alamat halaman, misalnya <strong>sampah-organik</strong>.</li>
+        <li>Isi ringkasan dan isi materi dengan kalimat biasa. Baris kosong memisahkan paragraf.</li>
+        <li>Isi status <strong>terbit</strong> ketika materi siap ditampilkan.</li>
+      </ol>
+    </section>
+
+    <section aria-labelledby="baca-admin">
+      <h2 id="baca-admin">Membaca halaman admin</h2>
+      <figure><figcaption>Gambar panduan: daftar periksa pada halaman admin.</figcaption></figure>
+      <ol>
+        <li>Buka <strong>/admin</strong> hanya setelah petugas memasang Cloudflare Access.</li>
+        <li>Lihat baris yang belum memiliki PDF atau link Form.</li>
+        <li>Jika pemeriksaan link meminta cek manual, buka link tersebut dan pastikan file atau Form dapat dibuka.</li>
+        <li>Periksa jumlah materi dan paket yang sudah terbit.</li>
+      </ol>
+    </section>
+
+    <section aria-labelledby="nyalakan-admin">
+      <h2 id="nyalakan-admin">Menyalakan halaman admin</h2>
+      <ol>
+        <li>Pastikan domain situs sudah aktif di Cloudflare Pages.</li>
+        <li>Buat aturan Cloudflare Access yang melindungi alamat <strong>/admin</strong>.</li>
+        <li>Di pengaturan build Cloudflare Pages, tambahkan variabel <strong>ADMIN_ENABLED</strong> dengan nilai <strong>true</strong>.</li>
+        <li>Jalankan deploy baru. Sebelum langkah ini, halaman admin tidak dibuat sama sekali.</li>
+      </ol>
+    </section>
+  </article>
+</BaseLayout>

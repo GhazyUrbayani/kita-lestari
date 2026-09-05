@@ -1,0 +1,30 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { asParagraphs, imageSourceUrl, isHttpUrl, materi, pdfPreviewUrl, type Materi } from "../../lib/content";
+
+export function getStaticPaths() {
+  return materi.map((item) => ({
+    params: { slug: item.slug },
+    props: { item },
+  }));
+}
+
+const { item } = Astro.props as { item: Materi };
+---
+
+<BaseLayout title={item.judul ?? "Materi"} live={{ page: "material", sources: ["materi"], slug: item.slug }}>
+  <article class="content-card material-page" data-live="material-detail">
+    <h1>{item.judul}</h1>
+    {item.ringkasan && <p>{item.ringkasan}</p>}
+    {isHttpUrl(item.gambar_url) && <img src={imageSourceUrl(item.gambar_url)} alt={item.judul ?? "Gambar materi"} loading="lazy" />}
+    {asParagraphs(item.isi).map((paragraph) => <p>{paragraph}</p>)}
+    {isHttpUrl(item.pdf_url) && <details class="document-embed">
+      <summary class="action-link">Tampilkan PDF materi di halaman ini</summary>
+      <div class="document-embed-panel">
+        <iframe src={pdfPreviewUrl(item.pdf_url)} title={`PDF ${item.judul ?? "materi"}`} loading="lazy" referrerpolicy="strict-origin-when-cross-origin">
+          PDF tidak dapat dimuat di halaman ini.
+        </iframe>
+      </div>
+    </details>}
+  </article>
+</BaseLayout>

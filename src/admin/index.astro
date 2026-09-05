@@ -1,0 +1,40 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { kredit, latihan, materi, pengumuman, snapshot, spreadsheetUrl, tim } from "../lib/content";
+
+const driveFolderUrl = import.meta.env.DRIVE_FOLDER_URL;
+const missingPdf = materi.filter((item) => !item.pdf_url?.trim());
+const missingForm = latihan.filter((item) => !item.form_url?.trim());
+const missingTitle = [
+  ...snapshot.sheets.materi.filter((item) => !item.judul?.trim()),
+  ...snapshot.sheets.latihan.filter((item) => !item.judul_paket?.trim()),
+  ...snapshot.sheets.pengumuman.filter((item) => !item.judul?.trim()),
+  ...snapshot.sheets.tim.filter((item) => !item.nama?.trim()),
+  ...snapshot.sheets.kredit.filter((item) => !item.nama?.trim()),
+];
+---
+
+<BaseLayout title="Panel pengelola">
+  <h1>Panel pengelola</h1>
+  <p>Halaman ini hanya untuk membaca kondisi isi situs.</p>
+  <ul>
+    <li><a href={spreadsheetUrl} target="_blank" rel="noopener noreferrer">Buka Spreadsheet</a></li>
+    {driveFolderUrl && <li><a href={driveFolderUrl} target="_blank" rel="noopener noreferrer">Buka folder Drive</a></li>}
+  </ul>
+  <section aria-labelledby="daftar-periksa">
+    <h2 id="daftar-periksa">Daftar periksa</h2>
+    <ul>
+      <li>Materi terbit: {materi.length}</li>
+      <li>Paket soal terbit: {latihan.length}</li>
+      <li>Materi tanpa PDF: {missingPdf.length}</li>
+      <li>Paket tanpa link Form: {missingForm.length}</li>
+      <li>Baris tanpa judul atau nama: {missingTitle.length}</li>
+    </ul>
+  </section>
+  <section aria-labelledby="cek-link">
+    <h2 id="cek-link">Pemeriksaan link</h2>
+    <p>Pemeriksaan link akan ditambahkan saat pola pengambilan data diterapkan. Jika CORS menghalangi pemeriksaan, halaman akan menampilkan link untuk diperiksa manual.</p>
+  </section>
+  <p>Build terakhir: {snapshot.builtAt ?? "Belum tersedia"}</p>
+  <p>Baris sumber: {pengumuman.length + tim.length + kredit.length + materi.length + latihan.length}</p>
+</BaseLayout>

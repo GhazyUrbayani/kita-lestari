@@ -1,0 +1,46 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { kredit, tim } from "../lib/content";
+---
+
+<BaseLayout title="Tentang" live={{ page: "about", sources: ["tim", "kredit"] }}>
+  <section class="page-intro"><h1>Tentang tim</h1></section>
+  <section class="content-section" aria-labelledby="judul-tim">
+    <h2 id="judul-tim">Tim KITA LESTARI</h2>
+    <div data-live="team">{tim.length ? (
+      <ul class="card-list">
+        {tim.map((anggota) => (
+          <li>
+            <article class="content-card">
+              <h3>{anggota.nama}</h3>
+              {anggota.nim && <p>NIM: {anggota.nim}</p>}
+              {(anggota.peran || anggota.prodi) && <p class="member-meta">
+                {anggota.peran && <span class="pill">{anggota.peran}</span>}
+                {anggota.prodi && <span class="pill">{anggota.prodi}</span>}
+              </p>}
+              {anggota.angkatan && <p>Angkatan {anggota.angkatan}</p>}
+            </article>
+          </li>
+        ))}
+      </ul>
+    ) : (
+      <p>Daftar tim belum tersedia. Pengelola dapat melengkapinya di Sheet.</p>
+    )}</div>
+  </section>
+  <section class="credits" aria-labelledby="judul-kredit">
+    <h2 id="judul-kredit">Kredit</h2>
+    <div data-live="credits">{kredit.length ? (
+      <dl>
+        {kredit.map((item) => (
+          <div>
+            {item.jenis && <dt>{item.jenis}</dt>}
+            <dd>{item.nama}</dd>
+            {item.keterangan && <dd>{item.keterangan}</dd>}
+          </div>
+        ))}
+      </dl>
+    ) : (
+      <p>Kredit belum tersedia.</p>
+    )}</div>
+  </section>
+</BaseLayout>

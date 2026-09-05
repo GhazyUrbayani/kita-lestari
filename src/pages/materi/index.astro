@@ -1,0 +1,22 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { materi } from "../../lib/content";
+---
+
+<BaseLayout title="Materi" live={{ page: "materials", sources: ["materi"] }}>
+  <section class="page-intro"><h1>Materi</h1></section>
+  <div data-live="materials-list">{materi.length ? (
+    <ul class="card-list">
+      {materi.map((item) => (
+        <li>
+          <article class="content-card">
+            <h2><a href={`/materi/${item.slug}`}>{item.judul}</a></h2>
+            {item.ringkasan && <p>{item.ringkasan}</p>}
+          </article>
+        </li>
+      ))}
+    </ul>
+  ) : (
+    <p>Belum ada materi yang diterbitkan. Pengelola dapat menambahkannya di Sheet.</p>
+  )}</div>
+</BaseLayout>

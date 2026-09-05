@@ -1,0 +1,21 @@
+---
+import { isCurrentPath } from "../lib/content";
+
+const pathname = Astro.url.pathname;
+const links = [
+  { href: "/", label: "Beranda" },
+  { href: "/materi", label: "Materi" },
+  { href: "/latihan", label: "Latihan" },
+  { href: "/tentang", label: "Tentang" },
+];
+---
+
+<nav class="bottom-nav" aria-label="Navigasi utama">
+  <ul>
+    {links.map((link) => (
+      <li>
+        <a href={link.href} aria-current={isCurrentPath(pathname, link.href) ? "page" : undefined}>{link.label}</a>
+      </li>
+    ))}
+  </ul>
+</nav>

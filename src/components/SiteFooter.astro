@@ -1,0 +1,18 @@
+---
+const { includeAdminLink = false } = Astro.props;
+---
+
+<footer class="site-footer">
+  <div class="footer-inner">
+    <section aria-labelledby="footer-mitra">
+      <h2 id="footer-mitra">Pendukung program</h2>
+      <p>Logo KITA LESTARI serta logo Diktisaintek, Belmawa, PKM, dan ITB akan dipasang dari berkas resmi tim.</p>
+    </section>
+    <nav aria-label="Tautan tambahan">
+      <ul class="footer-links">
+        <li><a href="/panduan">Panduan pengelola</a></li>
+        {includeAdminLink && <li><a href="/admin">Panel pengelola</a></li>}
+      </ul>
+    </nav>
+  </div>
+</footer>
