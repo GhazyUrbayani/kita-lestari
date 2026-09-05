@@ -1,6 +1,6 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
-import { isHttpUrl, latihan } from "../../lib/content";
+import { asParagraphs, isHttpUrl, latihan, pembahasanPaket } from "../../lib/content";
 
 function embedUrl(formUrl: string) {
   const url = new URL(formUrl);
@@ -9,7 +9,7 @@ function embedUrl(formUrl: string) {
 }
 ---
 
-<BaseLayout title="Latihan soal" live={{ page: "practice", sources: ["latihan"] }}>
+<BaseLayout title="Latihan soal" live={{ page: "practice", sources: ["latihan", "pembahasan"] }}>
   <section class="page-intro">
     <h1>Latihan soal</h1>
     <p>Pilih paket yang ingin dikerjakan.</p>
@@ -19,6 +19,7 @@ function embedUrl(formUrl: string) {
       {latihan.map((item) => {
         const formTersedia = isHttpUrl(item.form_url);
         const id = `keterangan-${item.urutan ?? item.judul_paket}`;
+        const kunci = pembahasanPaket(item.judul_paket);
         return (
           <li>
             <article class="content-card">
@@ -37,6 +38,19 @@ function embedUrl(formUrl: string) {
                 <p>Paket ini belum tersedia. Pengelola perlu mengisi link soal di Sheet.</p>
               )}
               {formTersedia && <p class="connection-note">Mengisi soal membutuhkan koneksi internet.</p>}
+              {formTersedia && kunci.length > 0 && (
+                <section class="answer-key" aria-live="polite" hidden>
+                  <h3>Kunci jawaban dan pembahasan</h3>
+                  <ol class="answer-list">
+                    {kunci.map((baris) => (
+                      <li>
+                        {baris.jawaban && <p class="answer-value"><strong>Jawaban:</strong> {baris.jawaban}</p>}
+                        {asParagraphs(baris.pembahasan).map((paragraf) => <p>{paragraf}</p>)}
+                      </li>
+                    ))}
+                  </ol>
+                </section>
+              )}
             </article>
           </li>
         );
@@ -45,4 +59,5 @@ function embedUrl(formUrl: string) {
   ) : (
     <p>Belum ada paket soal yang diterbitkan.</p>
   )}</div>
+  <script src="/scripts/quiz-reveal.js" defer></script>
 </BaseLayout>

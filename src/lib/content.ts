@@ -5,6 +5,7 @@ export type Latihan = { urutan?: string; judul_paket?: string; keterangan?: stri
 export type Pengumuman = { tanggal?: string; judul?: string; isi?: string; status?: string };
 export type AnggotaTim = { urutan?: string; nama?: string; nim?: string; peran?: string; prodi?: string; angkatan?: string };
 export type Kredit = { jenis?: string; nama?: string; keterangan?: string; status?: string };
+export type Pembahasan = { paket?: string; nomor?: string; jawaban?: string; pembahasan?: string; status?: string };
 
 type SourceSheet = { url: string; csv: string };
 type Snapshot = { version: number; source: string; builtAt: string | null; sheets: Record<string, SourceSheet> };
@@ -58,6 +59,21 @@ export const latihan = ordered(rows<Latihan>("latihan").filter((item) => isTerbi
 export const pengumuman = rows<Pengumuman>("pengumuman").filter((item) => isTerbit(item) && Boolean(stringValue(item.judul)));
 export const tim = ordered(rows<AnggotaTim>("tim").filter((item) => Boolean(stringValue(item.nama))));
 export const kredit = rows<Kredit>("kredit").filter((item) => isTerbit(item) && Boolean(stringValue(item.nama)));
+/* Berbeda dari sheet lain, kolom `status` di sini boleh dikosongkan: baris pembahasan
+   ditampilkan kecuali statusnya sengaja diisi selain "terbit", misalnya "draf". */
+function pembahasanTampil(item: { status?: string }) {
+  const status = stringValue(item.status);
+  return status === "" || status.toLocaleLowerCase("id-ID") === "terbit";
+}
+export const pembahasan = rows<Pembahasan>("pembahasan").filter((item) => pembahasanTampil(item) && Boolean(stringValue(item.paket)));
+
+/** Kunci jawaban satu paket latihan, diurutkan menurut kolom `nomor`. */
+export function pembahasanPaket(paket?: string) {
+  const kunci = stringValue(paket).toLocaleLowerCase("id-ID");
+  return pembahasan
+    .filter((item) => stringValue(item.paket).toLocaleLowerCase("id-ID") === kunci)
+    .sort((first, second) => (Number(stringValue(first.nomor)) || Infinity) - (Number(stringValue(second.nomor)) || Infinity));
+}
 
 export function asParagraphs(value?: string) { return stringValue(value).split(/\r?\n\s*\r?\n/).map((paragraph) => paragraph.trim()).filter(Boolean); }
 export function isHttpUrl(value?: string) { try { const url = new URL(stringValue(value)); return url.protocol === "https:" || url.protocol === "http:"; } catch { return false; } }

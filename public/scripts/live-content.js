@@ -34,15 +34,32 @@
 
   const published = (rows, field) => rows.filter((row) => text(row.status).toLocaleLowerCase("id-ID") === "terbit" && text(row[field]));
   const ordered = (rows) => [...rows].sort((a, b) => (Number(a.urutan) || Infinity) - (Number(b.urutan) || Infinity));
-  const assign = (selector, html) => { const node = document.querySelector(selector); if (node && node.innerHTML !== html) node.innerHTML = html; };
+  /* Isi versi live datang beberapa detik setelah halaman tampil. Bila saat itu
+     pembaca sudah membuka form atau kunci jawaban sudah terbuka, penggantian
+     dilewati supaya jawaban yang sedang diketik tidak ikut terhapus. */
+  const sedangDipakai = (node) => Boolean(node.querySelector("details[open]") || node.querySelector(".answer-key:not([hidden])"));
+  const assign = (selector, html) => {
+    const node = document.querySelector(selector);
+    if (!node || node.innerHTML === html || sedangDipakai(node)) return;
+    node.innerHTML = html;
+  };
   function materialList(rows, limit) {
     const materials = ordered(published(rows, "judul").filter((row) => text(row.slug)));
     const shown = limit ? materials.slice(0, limit) : materials;
     if (!shown.length) return "<p>Belum ada materi yang diterbitkan. Pengelola dapat menambahkannya di Sheet.</p>";
     return `<ul class="card-list">${shown.map((item) => `<li><article class="content-card"><h2><a href="/materi/${encodeURIComponent(item.slug)}">${escape(item.judul)}</a></h2>${item.ringkasan ? `<p>${escape(item.ringkasan)}</p>` : ""}</article></li>`).join("")}</ul>`;
   }
+  function answerKeyHtml(rows, paket) {
+    const key = text(paket).toLocaleLowerCase("id-ID");
+    const notes = rows
+      .filter((row) => (text(row.status) === "" || text(row.status).toLocaleLowerCase("id-ID") === "terbit") && text(row.paket).toLocaleLowerCase("id-ID") === key)
+      .sort((a, b) => (Number(text(a.nomor)) || Infinity) - (Number(text(b.nomor)) || Infinity));
+    if (!notes.length) return "";
+    const items = notes.map((row) => `<li>${row.jawaban ? `<p class="answer-value"><strong>Jawaban:</strong> ${escape(row.jawaban)}</p>` : ""}${paragraphHtml(row.pembahasan)}</li>`).join("");
+    return `<section class="answer-key" aria-live="polite" hidden><h3>Kunci jawaban dan pembahasan</h3><ol class="answer-list">${items}</ol></section>`;
+  }
   function render(data) {
-    const material = parseCsv(data.materi || ""), practice = parseCsv(data.latihan || ""), announcement = parseCsv(data.pengumuman || ""), team = parseCsv(data.tim || ""), credits = parseCsv(data.kredit || "");
+    const material = parseCsv(data.materi || ""), practice = parseCsv(data.latihan || ""), announcement = parseCsv(data.pengumuman || ""), team = parseCsv(data.tim || ""), credits = parseCsv(data.kredit || ""), discussion = parseCsv(data.pembahasan || "");
     if (config.page === "home") {
       const latest = published(announcement, "judul")[0];
       assign('[data-live="announcement"]', latest ? `<article class="notice-board">${latest.tanggal ? `<p class="notice-date"><time>${escape(latest.tanggal)}</time></p>` : ""}<h3>${escape(latest.judul)}</h3>${paragraphHtml(latest.isi)}</article>` : "<p>Belum ada pengumuman yang diterbitkan.</p>");
@@ -59,7 +76,7 @@
       const packages = ordered(published(practice, "judul_paket"));
       assign('[data-live="practice"]', packages.length ? `<ul class="card-list">${packages.map((item) => {
         const form = url(item.form_url);
-        return `<li><article class="content-card"><h2>${escape(item.judul_paket)}</h2>${item.keterangan ? `<p>${escape(item.keterangan)}</p>` : ""}${form ? `<details class="form-embed"><summary class="action-link">Tampilkan soal ${escape(item.judul_paket)} di halaman ini</summary><div class="form-embed-panel"><iframe src="${escape(formEmbedUrl(form))}" title="Soal ${escape(item.judul_paket)}" loading="lazy" referrerpolicy="strict-origin-when-cross-origin">Form tidak dapat dimuat di halaman ini.</iframe></div></details><p class="connection-note">Mengisi soal membutuhkan koneksi internet.</p>` : "<p>Paket ini belum tersedia. Pengelola perlu mengisi link soal di Sheet.</p>"}</article></li>`;
+        return `<li><article class="content-card"><h2>${escape(item.judul_paket)}</h2>${item.keterangan ? `<p>${escape(item.keterangan)}</p>` : ""}${form ? `<details class="form-embed"><summary class="action-link">Tampilkan soal ${escape(item.judul_paket)} di halaman ini</summary><div class="form-embed-panel"><iframe src="${escape(formEmbedUrl(form))}" title="Soal ${escape(item.judul_paket)}" loading="lazy" referrerpolicy="strict-origin-when-cross-origin">Form tidak dapat dimuat di halaman ini.</iframe></div></details><p class="connection-note">Mengisi soal membutuhkan koneksi internet.</p>${answerKeyHtml(discussion, item.judul_paket)}` : "<p>Paket ini belum tersedia. Pengelola perlu mengisi link soal di Sheet.</p>"}</article></li>`;
       }).join("")}</ul>` : "<p>Belum ada paket soal yang diterbitkan.</p>");
     }
     if (config.page === "about") {
