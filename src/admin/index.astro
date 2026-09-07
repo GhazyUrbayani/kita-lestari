@@ -1,10 +1,10 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
-import { kredit, latihan, materi, pengumuman, snapshot, spreadsheetUrl, tim } from "../lib/content";
+import { kredit, latihan, materi, pengumuman, snapshot, soalPaket, spreadsheetUrl, tim } from "../lib/content";
 
 const driveFolderUrl = import.meta.env.DRIVE_FOLDER_URL;
 const missingPdf = materi.filter((item) => !item.pdf_url?.trim());
-const missingForm = latihan.filter((item) => !item.form_url?.trim());
+const missingQuestions = latihan.filter((item) => soalPaket(item.judul_paket).length === 0);
 const missingTitle = [
   ...snapshot.sheets.materi.filter((item) => !item.judul?.trim()),
   ...snapshot.sheets.latihan.filter((item) => !item.judul_paket?.trim()),
@@ -27,7 +27,7 @@ const missingTitle = [
       <li>Materi terbit: {materi.length}</li>
       <li>Paket soal terbit: {latihan.length}</li>
       <li>Materi tanpa PDF: {missingPdf.length}</li>
-      <li>Paket tanpa link Form: {missingForm.length}</li>
+      <li>Paket tanpa butir soal: {missingQuestions.length}</li>
       <li>Baris tanpa judul atau nama: {missingTitle.length}</li>
     </ul>
   </section>

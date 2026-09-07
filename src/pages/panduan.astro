@@ -32,17 +32,16 @@ import BaseLayout from "../layouts/BaseLayout.astro";
       </ol>
     </section>
 
-    <section aria-labelledby="ganti-form">
-      <h2 id="ganti-form">Mengganti link Form</h2>
-      <figure><figcaption>Gambar panduan: menyalin link dari tombol kirim di Google Form.</figcaption></figure>
+    <section aria-labelledby="kelola-soal">
+      <h2 id="kelola-soal">Mengelola soal latihan di Sheet</h2>
       <ol>
-        <li>Buka Google Form paket soal.</li>
-        <li>Pilih tombol kirim lalu salin link formulir.</li>
-        <li>Buka Sheet dan pilih tab <strong>latihan</strong>.</li>
-        <li>Tempel link pada kolom <strong>form_url</strong>.</li>
-        <li>Gunakan link yang berakhir dengan <strong>/viewform</strong>. Situs akan menampilkan Form di halaman latihan; tidak perlu menambahkan kode sematan sendiri.</li>
-        <li>Jangan pernah menulis kunci jawaban atau pembahasan pada kolom ini.</li>
-        <li>Isi <strong>terbit</strong> pada kolom status jika paket siap dibuka warga.</li>
+        <li>Buka Sheet dan pilih tab <strong>latihan</strong> untuk menambah paket soal (isi <strong>urutan</strong>, <strong>judul_paket</strong>, <strong>keterangan</strong>, dan status <strong>terbit</strong>).</li>
+        <li>Buka tab <strong>soal</strong> untuk mengisi butir pertanyaan kuis.</li>
+        <li>Pastikan kolom <strong>paket</strong> pada setiap baris soal sama persis dengan <strong>judul_paket</strong> di tab latihan.</li>
+        <li>Isi <strong>nomor</strong>, <strong>pertanyaan</strong>, dan pilihan jawaban pada kolom <strong>opsi_a</strong> sampai <strong>opsi_d</strong>.</li>
+        <li>Isi kolom <strong>kunci</strong> dengan huruf jawaban benar (misal: <strong>A</strong>, <strong>B</strong>, <strong>C</strong>, atau <strong>D</strong>).</li>
+        <li>Isi kolom <strong>pembahasan</strong> sebagai penjelasan yang akan muncul otomatis setelah warga menyelesaikan kuis di situs.</li>
+        <li>Kolom <strong>form_url</strong> pada tab latihan sudah tidak diperlukan dan dapat dihapus.</li>
       </ol>
     </section>
 
@@ -63,8 +62,8 @@ import BaseLayout from "../layouts/BaseLayout.astro";
       <figure><figcaption>Gambar panduan: daftar periksa pada halaman admin.</figcaption></figure>
       <ol>
         <li>Buka <strong>/admin</strong> hanya setelah petugas memasang Cloudflare Access.</li>
-        <li>Lihat baris yang belum memiliki PDF atau link Form.</li>
-        <li>Jika pemeriksaan link meminta cek manual, buka link tersebut dan pastikan file atau Form dapat dibuka.</li>
+        <li>Lihat baris yang belum memiliki PDF atau paket tanpa butir soal.</li>
+        <li>Jika pemeriksaan link meminta cek manual, buka link tersebut dan pastikan file dapat dibuka.</li>
         <li>Periksa jumlah materi dan paket yang sudah terbit.</li>
       </ol>
     </section>

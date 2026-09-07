@@ -1,7 +1,7 @@
 {
   "version": 1,
   "source": "https://docs.google.com/spreadsheets/d/1nItdfvg9ZL-lE4r5a-7_V6GKf8_mYeUCd_PjMOKYLa8/edit?usp=sharing",
-  "builtAt": "2026-09-07T01:18:03.593Z",
+  "builtAt": "2026-09-07T03:25:08.063Z",
   "sheets": {
     "materi": {
       "url": "https://docs.google.com/spreadsheets/d/1nItdfvg9ZL-lE4r5a-7_V6GKf8_mYeUCd_PjMOKYLa8/gviz/tq?tqx=out:csv&sheet=materi",
@@ -9,7 +9,7 @@
     },
     "latihan": {
       "url": "https://docs.google.com/spreadsheets/d/1nItdfvg9ZL-lE4r5a-7_V6GKf8_mYeUCd_PjMOKYLa8/gviz/tq?tqx=out:csv&sheet=latihan",
-      "csv": "\"urutan\",\"judul_paket\",\"keterangan\",\"form_url\",\"status\"\n\"1\",\"Paket 1\",\"\",\"https://docs.google.com/forms/d/e/1FAIpQLSfhRL-0Zluvjv1ejhIptZNWqG22xQ8th3ldIRzpSwf8yfxSbA/viewform\",\"terbit\"\n\"2\",\"Paket 2\",\"\",\"https://docs.google.com/forms/d/e/1FAIpQLSe3tkLZwWywIkeEnAburHw5ukXJpqNLuJ__Y5vDmcu3AbnQeg/viewform\",\"terbit\"\n\"3\",\"Paket 3\",\"\",\"https://docs.google.com/forms/d/e/1FAIpQLSfGtE41Q2ZD2dpBg2zMzyvJwPk5sn9B04K3vq1XQWi4nw92UA/viewform\",\"terbit\""
+      "csv": "\"urutan\",\"judul_paket\",\"keterangan\",\"form_url\",\"status\"\n\"1\",\"Paket 1\",\"\",\"\",\"terbit\"\n\"2\",\"Paket 2\",\"\",\"\",\"terbit\"\n\"3\",\"Paket 3\",\"\",\"\",\"terbit\""
     },
     "pengumuman": {
       "url": "https://docs.google.com/spreadsheets/d/1nItdfvg9ZL-lE4r5a-7_V6GKf8_mYeUCd_PjMOKYLa8/gviz/tq?tqx=out:csv&sheet=pengumuman",

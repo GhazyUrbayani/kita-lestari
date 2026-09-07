@@ -1,7 +1,7 @@
 import snapshotFile from "../data/snapshot.json";
 
 export type Materi = { urutan?: string; slug?: string; judul?: string; ringkasan?: string; isi?: string; gambar_url?: string; pdf_url?: string; status?: string };
-export type Latihan = { urutan?: string; judul_paket?: string; keterangan?: string; form_url?: string; status?: string };
+export type Latihan = { urutan?: string; judul_paket?: string; keterangan?: string; status?: string };
 export type Pengumuman = { tanggal?: string; judul?: string; isi?: string; status?: string };
 export type AnggotaTim = { urutan?: string; nama?: string; nim?: string; peran?: string; prodi?: string; angkatan?: string };
 export type Kredit = { jenis?: string; nama?: string; keterangan?: string; status?: string };
