@@ -1,10 +1,34 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import { materi } from "../../lib/content";
+import { deck, slideUrlKecil } from "../../lib/lokakarya";
 ---
 
 <BaseLayout title="Materi" live={{ page: "materials", sources: ["materi"] }}>
-  <section class="page-intro"><h1>Materi</h1></section>
+  <section class="page-intro">
+    <h1>Materi</h1>
+    <p>Bacaan singkat tentang memilah sampah dan membuat lubang biopori, ditambah slide lokakarya yang dipakai di Desa Sukalaksana.</p>
+  </section>
+
+  <article class="content-card">
+    <h2><a href={deck.href}>{deck.judul}</a></h2>
+    <p>{deck.ringkasan}</p>
+    <figure class="slide-item">
+      <img
+        src={slideUrlKecil(12)}
+        alt="Cuplikan slide lokakarya yang menjelaskan apa itu biopori serta enam langkah membuatnya"
+        width="800"
+        height="450"
+        loading="lazy"
+        decoding="async"
+      />
+    </figure>
+    <p class="action-row">
+      <a class="action-link" href={deck.href}>Lihat slide</a>
+      <a class="action-link action-link-kedua" href={deck.pdf} download>Unduh {deck.pdfLabel}</a>
+    </p>
+  </article>
+
   <div data-live="materials-list">{materi.length ? (
     <ul class="card-list">
       {materi.map((item) => (

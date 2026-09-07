@@ -1,16 +1,39 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
 import { materi } from "../lib/content";
+import { deck, poster, slideUrlKecil } from "../lib/lokakarya";
 
 const featuredMateri = materi.slice(0, 2);
-
 ---
 
 <BaseLayout title="Beranda" live={{ page: "home", sources: ["materi", "pengumuman"] }}>
   <section class="page-intro" aria-labelledby="judul-beranda">
     <h1 id="judul-beranda">KITA LESTARI</h1>
-    <p>Biopori di Desa Sukalaksana.</p>
+    <p class="hero-tagline">
+      Mari mulai dari <span class="sorot sorot-oranye">satu langkah</span>, kelola bersama, dan jadikan
+      lingkungan kita <span class="sorot sorot-hijau">lebih lestari!</span>
+    </p>
+    <p>Belajar memilah sampah dan membuat lubang biopori di Desa Sukalaksana.</p>
   </section>
+
+  <article class="content-card">
+    <h2><a href={deck.href}>{deck.judul}</a></h2>
+    <p>{deck.ringkasan}</p>
+    <figure class="slide-item">
+      <img
+        src={slideUrlKecil(8)}
+        alt="Cuplikan slide lokakarya berisi tiga tempat sampah: bahan berbahaya dan beracun, sampah organik, dan sampah anorganik"
+        width="800"
+        height="450"
+        loading="eager"
+        decoding="async"
+      />
+    </figure>
+    <p class="action-row">
+      <a class="action-link" href={deck.href}>Lihat slide lokakarya</a>
+      <a class="action-link action-link-kedua" href={deck.pdf} download>Unduh {deck.pdfLabel}</a>
+    </p>
+  </article>
 
   <figure class="diagram" aria-labelledby="judul-diagram">
     <picture>
@@ -20,7 +43,7 @@ const featuredMateri = materi.slice(0, 2);
         alt="Dua foto lubang biopori dengan penutup berlubang di tanah dan di rumput, serta diagram potongan tanah yang menandai penutup/penyaring pipa, lubang biopori, dan sampah organik"
         width="1600"
         height="1600"
-        loading="eager"
+        loading="lazy"
         decoding="async"
       />
     </picture>
@@ -41,6 +64,24 @@ const featuredMateri = materi.slice(0, 2);
       <p>Belum ada materi yang diterbitkan.</p>
     )}</div>
     <p><a href="/materi">Lihat semua materi</a></p>
+  </section>
+
+  <section class="content-section" aria-labelledby="judul-poster-beranda">
+    <h2 id="judul-poster-beranda">Poster ringkasan</h2>
+    <p>Seluruh isi lokakarya dalam satu lembar, siap dicetak dan ditempel.</p>
+    <figure class="poster-figure">
+      <a href={poster.gambar} target="_blank" rel="noopener">
+        <img
+          src={poster.kecil}
+          alt={poster.alt}
+          width={poster.lebar}
+          height={poster.tinggi}
+          loading="lazy"
+          decoding="async"
+        />
+      </a>
+      <figcaption>Pilih poster untuk membukanya dalam ukuran penuh.</figcaption>
+    </figure>
   </section>
 
   <p class="action-row"><a class="action-link" href="/latihan">Buka latihan soal</a></p>

@@ -1,4 +1,6 @@
 ---
+import { logos } from "../lib/lokakarya";
+
 const { includeAdminLink = false } = Astro.props;
 ---
 
@@ -6,10 +8,15 @@ const { includeAdminLink = false } = Astro.props;
   <div class="footer-inner">
     <section aria-labelledby="footer-mitra">
       <h2 id="footer-mitra">Pendukung program</h2>
-      <p>Logo KITA LESTARI serta logo Diktisaintek, Belmawa, PKM, dan ITB akan dipasang dari berkas resmi tim.</p>
+      <div class="logo-strip">
+        {logos.map((logo) => (
+          <img src={logo.berkas} alt={logo.nama} height="34" loading="lazy" decoding="async" />
+        ))}
+      </div>
     </section>
     <nav aria-label="Tautan tambahan">
       <ul class="footer-links">
+        <li><a href="/tentang">Tentang tim</a></li>
         <li><a href="/panduan">Panduan pengelola</a></li>
         {includeAdminLink && <li><a href="/admin">Panel pengelola</a></li>}
       </ul>

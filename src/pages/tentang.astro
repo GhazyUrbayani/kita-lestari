@@ -1,10 +1,15 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
 import { kredit, tim } from "../lib/content";
+import { logos } from "../lib/lokakarya";
 ---
 
 <BaseLayout title="Tentang" live={{ page: "about", sources: ["tim", "kredit"] }}>
-  <section class="page-intro"><h1>Tentang tim</h1></section>
+  <section class="page-intro">
+    <h1>Tentang kami</h1>
+    <p>KITA LESTARI adalah program pengabdian mahasiswa untuk pengelolaan sampah dan penerapan biopori di Desa Sukalaksana.</p>
+  </section>
+
   <section class="content-section" aria-labelledby="judul-tim">
     <h2 id="judul-tim">Tim KITA LESTARI</h2>
     <div data-live="team">{tim.length ? (
@@ -27,6 +32,23 @@ import { kredit, tim } from "../lib/content";
       <p>Daftar tim belum tersedia. Pengelola dapat melengkapinya di Sheet.</p>
     )}</div>
   </section>
+
+  <section class="content-section" aria-labelledby="judul-logo">
+    <h2 id="judul-logo">Logo pendukung</h2>
+    <ul class="logo-grid">
+      {logos.map((logo) => (
+        <li class="logo-tile">
+          <img src={logo.berkas} alt={logo.nama} loading="lazy" decoding="async" />
+        </li>
+      ))}
+    </ul>
+    <p class="logo-caption">
+      Program ini berjalan bersama Kementerian Pendidikan Tinggi, Sains, dan Teknologi melalui Simbelmawa
+      dan Program Kreativitas Mahasiswa, dengan dukungan Institut Teknologi Bandung, Pelita Muda ITB, dan
+      Sigap Bersinergi.
+    </p>
+  </section>
+
   <section class="credits" aria-labelledby="judul-kredit">
     <h2 id="judul-kredit">Kredit</h2>
     <div data-live="credits">{kredit.length ? (

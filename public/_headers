@@ -1,0 +1,5 @@
+# Cloudflare Pages membaca berkas ini saat menyajikan situs.
+# Tanpa baris di bawah, sebagian browser mengunduh PDF alih-alih menampilkannya,
+# sehingga penampil PDF di dalam halaman materi ikut gagal terbuka.
+/dokumen/*
+  Content-Disposition: inline

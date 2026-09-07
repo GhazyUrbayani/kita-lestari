@@ -1,6 +1,7 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import { asParagraphs, imageSourceUrl, isHttpUrl, materi, pdfPreviewUrl, type Materi } from "../../lib/content";
+import { deck, slideMateri, slideUrl } from "../../lib/lokakarya";
 
 export function getStaticPaths() {
   return materi.map((item) => ({
@@ -10,12 +11,46 @@ export function getStaticPaths() {
 }
 
 const { item } = Astro.props as { item: Materi };
+const slide = slideMateri(item.slug);
 ---
 
 <BaseLayout title={item.judul ?? "Materi"} live={{ page: "material", sources: ["materi"], slug: item.slug }}>
-  <article class="content-card material-page" data-live="material-detail">
+  <section class="page-intro" data-live="material-header">
     <h1>{item.judul}</h1>
     {item.ringkasan && <p>{item.ringkasan}</p>}
+  </section>
+
+  {/* Slide disimpan di dalam situs, bukan diambil dari Spreadsheet, jadi
+      letaknya di luar kotak yang ditimpa oleh isi versi live. */}
+  {slide.length > 0 && (
+    <section class="content-section" aria-label={`Slide lokakarya untuk ${item.judul ?? "materi ini"}`}>
+      <ol class="slide-gallery">
+        {slide.map((butir) => (
+          <li>
+            <figure class="slide-item">
+              <img
+                src={slideUrl(butir.nomor)}
+                alt={butir.alt}
+                width="1600"
+                height="900"
+                loading="lazy"
+                decoding="async"
+              />
+              <figcaption>
+                <span class="slide-nomor">{butir.nomor}</span>{butir.judul}
+              </figcaption>
+            </figure>
+          </li>
+        ))}
+      </ol>
+      <p class="action-row">
+        <a class="action-link" href={deck.href}>Lihat slide lengkap</a>
+        <a class="action-link action-link-kedua" href={deck.pdf} download>Unduh {deck.pdfLabel}</a>
+      </p>
+    </section>
+  )}
+
+  <article class="content-card material-page" data-live="material-detail">
     {isHttpUrl(item.gambar_url) && <img src={imageSourceUrl(item.gambar_url)} alt={item.judul ?? "Gambar materi"} loading="lazy" />}
     {asParagraphs(item.isi).map((paragraph) => <p>{paragraph}</p>)}
     {isHttpUrl(item.pdf_url) && <details class="document-embed">

@@ -86,7 +86,9 @@
       const item = ordered(published(material, "judul")).find((entry) => entry.slug === config.slug);
       if (!item) return;
       const image = url(item.gambar_url), pdf = url(item.pdf_url);
-      assign('[data-live="material-detail"]', `<h1>${escape(item.judul)}</h1>${item.ringkasan ? `<p>${escape(item.ringkasan)}</p>` : ""}${image ? `<img src="${escape(imageSourceUrl(image))}" alt="${escape(item.judul)}" loading="lazy">` : ""}${paragraphHtml(item.isi)}${pdf ? `<details class="document-embed"><summary class="action-link">Tampilkan PDF materi di halaman ini</summary><div class="document-embed-panel"><iframe src="${escape(pdfPreviewUrl(pdf))}" title="PDF ${escape(item.judul)}" loading="lazy" referrerpolicy="strict-origin-when-cross-origin">PDF tidak dapat dimuat di halaman ini.</iframe></div></details>` : ""}`);
+      /* Judul dan isi dipisah karena galeri slide berada di antara keduanya. */
+      assign('[data-live="material-header"]', `<h1>${escape(item.judul)}</h1>${item.ringkasan ? `<p>${escape(item.ringkasan)}</p>` : ""}`);
+      assign('[data-live="material-detail"]', `${image ? `<img src="${escape(imageSourceUrl(image))}" alt="${escape(item.judul)}" loading="lazy">` : ""}${paragraphHtml(item.isi)}${pdf ? `<details class="document-embed"><summary class="action-link">Tampilkan PDF materi di halaman ini</summary><div class="document-embed-panel"><iframe src="${escape(pdfPreviewUrl(pdf))}" title="PDF ${escape(item.judul)}" loading="lazy" referrerpolicy="strict-origin-when-cross-origin">PDF tidak dapat dimuat di halaman ini.</iframe></div></details>` : ""}`);
     }
     if (config.page === "practice") {
       const packages = ordered(published(practice, "judul_paket"));
@@ -117,5 +119,11 @@
     localStorage.setItem(storageKey, JSON.stringify({ buildId: config.buildId, sheets, savedAt: new Date().toISOString() }));
     render(sheets);
   }
-  requestAnimationFrame(() => { const stored = readStored(); if (stored && stored.buildId === config.buildId && stored.sheets) render(stored.sheets); refresh().catch(() => {}); });
+  /* Simpanan lokal dikumpulkan dari semua halaman, jadi bisa saja belum memuat
+     sheet yang dipakai halaman ini. Menggambar dari simpanan yang belum lengkap
+     membuat isi yang sudah benar sekejap berganti menjadi "belum tersedia",
+     sampai hasil unduhan datang. Karena itu simpanan hanya dipakai bila sheet
+     halaman ini memang ada di dalamnya. */
+  const simpananLengkap = (sheets) => (config.sources || []).every((sheet) => typeof sheets[sheet] === "string");
+  requestAnimationFrame(() => { const stored = readStored(); if (stored && stored.buildId === config.buildId && stored.sheets && simpananLengkap(stored.sheets)) render(stored.sheets); refresh().catch(() => {}); });
 })();

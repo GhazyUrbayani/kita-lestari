@@ -1,0 +1,73 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { deck, poster, slides, slideUrl } from "../../lib/lokakarya";
+---
+
+<BaseLayout title={deck.judul}>
+  <section class="page-intro">
+    <h1>{deck.judul}</h1>
+    <p>{deck.ringkasan}</p>
+  </section>
+
+  <section class="content-section" aria-labelledby="judul-berkas">
+    <h2 id="judul-berkas">Berkas materi</h2>
+    <p>Slide dapat dibaca langsung di halaman ini, atau diunduh sebagai satu berkas PDF untuk dibawa ke lapangan dan dicetak.</p>
+    <p class="action-row">
+      <a class="action-link" href={deck.pdf} download>Unduh {deck.pdfLabel}</a>
+    </p>
+    <details class="document-embed">
+      <summary class="action-link action-link-kedua">Tampilkan PDF di halaman ini</summary>
+      <div class="document-embed-panel">
+        <iframe src={deck.pdf} title={`PDF ${deck.judul}`} loading="lazy">
+          PDF tidak dapat dimuat di halaman ini. Gunakan tombol unduh di atas.
+        </iframe>
+      </div>
+    </details>
+  </section>
+
+  <section class="content-section" aria-labelledby="judul-slide">
+    <h2 id="judul-slide">Slide</h2>
+    <ol class="slide-gallery">
+      {slides.map((slide) => (
+        <li>
+          <figure class="slide-item">
+            <img
+              src={slideUrl(slide.nomor)}
+              alt={slide.alt}
+              width="1600"
+              height="900"
+              loading={slide.nomor <= 2 ? "eager" : "lazy"}
+              decoding="async"
+            />
+            <figcaption>
+              <span class="slide-nomor">{slide.nomor}</span>{slide.judul}
+            </figcaption>
+          </figure>
+        </li>
+      ))}
+    </ol>
+  </section>
+
+  <section class="content-section" aria-labelledby="judul-poster">
+    <h2 id="judul-poster">Poster ringkasan</h2>
+    <p>Satu lembar berisi seluruh isi lokakarya. Cocok dicetak dan ditempel di balai desa atau pos ronda.</p>
+    <figure class="poster-figure">
+      <a href={poster.gambar} target="_blank" rel="noopener">
+        <img
+          src={poster.kecil}
+          alt={poster.alt}
+          width={poster.lebar}
+          height={poster.tinggi}
+          loading="lazy"
+          decoding="async"
+        />
+      </a>
+      <figcaption>Pilih poster untuk membukanya dalam ukuran penuh.</figcaption>
+    </figure>
+  </section>
+
+  <p class="action-row">
+    <a class="action-link" href="/materi">Kembali ke daftar materi</a>
+    <a class="action-link action-link-kedua" href="/latihan">Buka latihan soal</a>
+  </p>
+</BaseLayout>
