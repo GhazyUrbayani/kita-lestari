@@ -7,6 +7,10 @@ import { sheetUrls, snapshot } from "../lib/content";
 
 type Props = {
   title: string;
+  description?: string;
+  keywords?: string;
+  image?: string;
+  isHome?: boolean;
   live?: {
     page: "home" | "materials" | "material" | "practice" | "about";
     sources: string[];
@@ -14,8 +18,27 @@ type Props = {
   };
 };
 
-const { title, live } = Astro.props;
+const { title, description, keywords, image, isHome, live } = Astro.props;
 const adminEnabled = import.meta.env.ADMIN_ENABLED === "true";
+
+const siteUrl = "https://kita-lestari.19623060.workers.dev";
+const canonicalUrl = new URL(Astro.url.pathname, siteUrl).href;
+
+const pageTitle = isHome
+  ? "KITA LESTARI | Lubang Biopori Desa Sukalaksana - PKM PM ITB Pelita Muda"
+  : `${title} | KITA LESTARI - Biopori Desa Sukalaksana`;
+
+const pageDescription =
+  description ||
+  "Program KITA LESTARI PKM-PM ITB bersama Pelita Muda: Gerakan edukasi pemilahan sampah dan penerapan lubang resapan biopori pedesaan di Desa Sukalaksana demi kelestarian lingkungan.";
+
+const pageKeywords =
+  keywords ||
+  "kita lestari, pkm pm itb, pkm pelita muda, biopori, sukalaksana, biopori pedesaan, biopori desa, biopori sukalaksana, biopori Desa Sukalaksana, lubang biopori, pemilahan sampah desa, edukasi lingkungan";
+
+const pageImage = image
+  ? (image.startsWith("http") ? image : `${siteUrl}${image}`)
+  : `${siteUrl}/images/diagram-biopori.webp`;
 ---
 
 <!doctype html>
@@ -23,8 +46,59 @@ const adminEnabled = import.meta.env.ADMIN_ENABLED === "true";
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="description" content="Arsip materi dan latihan KITA LESTARI." />
-    <title>{title} | KITA LESTARI</title>
+    <title>{pageTitle}</title>
+    <meta name="title" content={pageTitle} />
+    <meta name="description" content={pageDescription} />
+    <meta name="keywords" content={pageKeywords} />
+    <meta name="author" content="Tim KITA LESTARI - PKM-PM ITB Pelita Muda" />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href={canonicalUrl} />
+
+    <!-- Google Search Console Verification -->
+    <meta name="google-site-verification" content="googlebe9891414011e795" />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content={isHome ? "website" : "article"} />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={pageDescription} />
+    <meta property="og:image" content={pageImage} />
+    <meta property="og:site_name" content="KITA LESTARI - Desa Sukalaksana" />
+    <meta property="og:locale" content="id_ID" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:url" content={canonicalUrl} />
+    <meta name="twitter:title" content={pageTitle} />
+    <meta name="twitter:description" content={pageDescription} />
+    <meta name="twitter:image" content={pageImage} />
+
+    <!-- JSON-LD Structured Data Schema.org -->
+    <script type="application/ld+json" set:html={JSON.stringify({
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "WebSite",
+          "@id": `${siteUrl}/#website`,
+          "url": `${siteUrl}/`,
+          "name": "KITA LESTARI",
+          "description": "Program PKM-PM ITB bersama Pelita Muda: Pemilahan Sampah dan Lubang Resapan Biopori Pedesaan di Desa Sukalaksana.",
+          "inLanguage": "id-ID"
+        },
+        {
+          "@type": "EducationalOrganization",
+          "@id": `${siteUrl}/#organization`,
+          "name": "Tim KITA LESTARI (PKM-PM ITB Pelita Muda)",
+          "url": siteUrl,
+          "logo": `${siteUrl}/images/logos/kita-lestari.webp`,
+          "address": {
+            "@type": "PostalAddress",
+            "addressLocality": "Desa Sukalaksana",
+            "addressCountry": "ID"
+          }
+        }
+      ]
+    })} />
   </head>
   <body>
     <a class="skip-link" href="#isi-utama">Lewati navigasi</a>

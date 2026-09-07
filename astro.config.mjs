@@ -20,6 +20,7 @@ function conditionalAdminRoute(enabled) {
 }
 
 export default defineConfig({
+  site: "https://kita-lestari.19623060.workers.dev",
   output: "static",
   integrations: [conditionalAdminRoute(adminEnabled)],
 });

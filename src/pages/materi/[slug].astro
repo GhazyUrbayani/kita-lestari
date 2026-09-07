@@ -14,7 +14,11 @@ const { item } = Astro.props as { item: Materi };
 const slide = slideMateri(item.slug);
 ---
 
-<BaseLayout title={item.judul ?? "Materi"} live={{ page: "material", sources: ["materi"], slug: item.slug }}>
+<BaseLayout
+  title={item.judul ?? "Materi"}
+  description={item.ringkasan || `Materi ${item.judul}: Edukasi pemilahan sampah dan penerapan biopori pedesaan Desa Sukalaksana oleh PKM-PM ITB Pelita Muda.`}
+  live={{ page: "material", sources: ["materi"], slug: item.slug }}
+>
   <section class="page-intro" data-live="material-header">
     <h1>{item.judul}</h1>
     {item.ringkasan && <p>{item.ringkasan}</p>}

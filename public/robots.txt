@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://kita-lestari.19623060.workers.dev/sitemap.xml

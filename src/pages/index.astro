@@ -6,14 +6,17 @@ import { deck, poster, slideUrlKecil } from "../lib/lokakarya";
 const featuredMateri = materi.slice(0, 2);
 ---
 
-<BaseLayout title="Beranda" live={{ page: "home", sources: ["materi", "pengumuman"] }}>
+<BaseLayout title="Beranda" isHome={true} live={{ page: "home", sources: ["materi", "pengumuman"] }}>
   <section class="page-intro" aria-labelledby="judul-beranda">
     <h1 id="judul-beranda">KITA LESTARI</h1>
     <p class="hero-tagline">
       Mari mulai dari <span class="sorot sorot-oranye">satu langkah</span>, kelola bersama, dan jadikan
       lingkungan kita <span class="sorot sorot-hijau">lebih lestari!</span>
     </p>
-    <p>Belajar memilah sampah dan membuat lubang biopori di Desa Sukalaksana.</p>
+    <p>
+      Program pengabdian masyarakat <strong>PKM-PM ITB</strong> bersama <strong>Pelita Muda</strong>:
+      Edukasi pemilahan sampah organik serta pembuatan <strong>lubang biopori pedesaan</strong> di <strong>Desa Sukalaksana</strong>.
+    </p>
   </section>
 
   <article class="content-card">

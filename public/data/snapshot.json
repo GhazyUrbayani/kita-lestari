@@ -1,7 +1,7 @@
 {
   "version": 1,
   "source": "https://docs.google.com/spreadsheets/d/1nItdfvg9ZL-lE4r5a-7_V6GKf8_mYeUCd_PjMOKYLa8/edit?usp=sharing",
-  "builtAt": "2026-09-07T03:25:08.063Z",
+  "builtAt": "2026-09-07T03:56:32.760Z",
   "sheets": {
     "materi": {
       "url": "https://docs.google.com/spreadsheets/d/1nItdfvg9ZL-lE4r5a-7_V6GKf8_mYeUCd_PjMOKYLa8/gviz/tq?tqx=out:csv&sheet=materi",
@@ -9,7 +9,7 @@
     },
     "latihan": {
       "url": "https://docs.google.com/spreadsheets/d/1nItdfvg9ZL-lE4r5a-7_V6GKf8_mYeUCd_PjMOKYLa8/gviz/tq?tqx=out:csv&sheet=latihan",
-      "csv": "\"urutan\",\"judul_paket\",\"keterangan\",\"form_url\",\"status\"\n\"1\",\"Paket 1\",\"\",\"\",\"terbit\"\n\"2\",\"Paket 2\",\"\",\"\",\"terbit\"\n\"3\",\"Paket 3\",\"\",\"\",\"terbit\""
+      "csv": "\"urutan\",\"judul_paket\",\"keterangan\",\"status\"\n\"1\",\"Paket 1\",\"\",\"terbit\"\n\"2\",\"Paket 2\",\"\",\"terbit\"\n\"3\",\"Paket 3\",\"\",\"terbit\""
     },
     "pengumuman": {
       "url": "https://docs.google.com/spreadsheets/d/1nItdfvg9ZL-lE4r5a-7_V6GKf8_mYeUCd_PjMOKYLa8/gviz/tq?tqx=out:csv&sheet=pengumuman",
